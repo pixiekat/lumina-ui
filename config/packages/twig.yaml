@@ -1,5 +1,16 @@
 twig:
     file_name_pattern: '*.twig'
+    paths:
+        # Templates ship inside the (in-tree) Lumina UI bundle. Registered under
+        # the @LuminaUi namespace, e.g. {% extends '@LuminaUi/layout.html.twig' %}.
+        '%kernel.project_dir%/vendor/pixiekat/lumina-ui-symfony-bundle/templates': LuminaUi
+    globals:
+        # Base URLs of the other apps in the stack (instance-specific, defined in
+        # the app — not the bundle). Exposed to every template so cross-app links
+        # need no per-controller plumbing. Sourced from the ctomop_url/exact_url
+        # parameters (themselves %env(CTOMOP_URL)% / %env(EXACT_URL)%).
+        ctomop_url: '%ctomop_url%'
+        exact_url: '%exact_url%'
 
 when@test:
     twig:

@@ -1,0 +1,3 @@
+pixiekat_symfony_helpers_bundle.routes:
+  resource: '@PixiekatSymfonyHelpersBundle/config/routes.yml'
+  prefix: /

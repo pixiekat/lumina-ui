@@ -1,6 +1,18 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
+parameters:
+    ctomop_url: '%env(CTOMOP_URL)%'
+    exact_url: '%env(EXACT_URL)%'
+
 framework:
     secret: '%env(APP_SECRET)%'
+
+    # Behind the Apache reverse proxy (lumina.bilh.org.test → 127.0.0.1:8002).
+    # The hop is loopback, so trust 127.0.0.1/::1 and honour the X-Forwarded-*
+    # headers the vhost sets — otherwise the :443 vhost still yields http:// URLs
+    # and insecure cookies. x-forwarded-prefix is listed too so a future subpath
+    # mount would Just Work; it's harmless at the site root.
+    trusted_proxies: '127.0.0.1,::1'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-port', 'x-forwarded-proto', 'x-forwarded-prefix']
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true

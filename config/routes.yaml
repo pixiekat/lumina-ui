@@ -9,3 +9,10 @@
 
 controllers:
     resource: routing.controllers
+
+# Attribute routes from the in-tree Lumina UI bundle's controllers.
+lumina_ui_bundle:
+    resource:
+        path: '../vendor/pixiekat/lumina-ui-symfony-bundle/src/Controller/'
+        namespace: Pixiekat\LuminaUiBundle\Controller
+    type: attribute

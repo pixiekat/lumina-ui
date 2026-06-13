@@ -7,12 +7,28 @@ doctrine:
         #server_version: '16'
 
         profiling_collect_backtrace: '%kernel.debug%'
+
+        # lumina_db is PostGIS: it ships a system table (spatial_ref_sys) and two
+        # views (geometry_columns, geography_columns) that Doctrine must NOT try to
+        # manage — otherwise `doctrine:migrations:diff` would emit a DROP for them.
+        # This filter makes Doctrine ignore any table named exactly spatial_ref_sys
+        # when comparing the mapped metadata against the live schema. (Views are
+        # ignored by the schema tool already.)
+        schema_filter: '~^(?!spatial_ref_sys$)~'
     orm:
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore
         identity_generation_preferences:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
-        auto_mapping: true
+        # auto_mapping OFF: with it on, Doctrine maps the entities of EVERY
+        # registered bundle — including pixiekat/symfony-common-helpers, whose
+        # ResetPasswordRequest references App\Entity\User, so with auto_mapping ON
+        # Doctrine would scan EVERY bundle's entities and fail unpredictably. We
+        # turn it off and map exactly three namespaces explicitly: the app's own
+        # entities (incl. the new App\Entity\User), the Lumina UI bundle, and the
+        # helper bundle's entities (Ban/AuditLog/Term/Vocabulary/ResetPasswordRequest)
+        # — which the helper bundle's request-time services require to be mapped.
+        auto_mapping: false
         mappings:
             App:
                 type: attribute
@@ -20,6 +36,26 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+            # Evaluation entities live in the Lumina UI bundle, not in the host
+            # app's src/. We map its Entity directory explicitly (is_bundle: false
+            # + absolute dir) so mapping does not depend on bundle resource
+            # resolution — robust while the bundle is developed in-place.
+            LuminaUi:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/vendor/pixiekat/lumina-ui-symfony-bundle/src/Entity'
+                prefix: 'Pixiekat\LuminaUiBundle\Entity'
+                alias: LuminaUi
+            # Entities shipped by pixiekat/symfony-common-helpers. Required because
+            # the helper bundle's services (BanSubscriber, AuditLogManager, …) look
+            # these up at runtime. BaseEntity in that dir has no #[ORM\Entity] and is
+            # harmlessly skipped by the attribute driver.
+            SymfonyHelpers:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/vendor/pixiekat/symfony-common-helpers/src/Entity'
+                prefix: 'Pixiekat\SymfonyHelpers\Entity'
+                alias: SymfonyHelpers
 
 when@test:
     doctrine:

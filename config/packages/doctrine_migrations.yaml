@@ -1,6 +1,9 @@
 doctrine_migrations:
     migrations_paths:
-        # namespace is arbitrary but should be different from App\Migrations
-        # as migrations classes should NOT be autoloaded
-        'DoctrineMigrations': '%kernel.project_dir%/migrations'
+        # The lumina_db schema is OWNED BY THE BUNDLE: migrations are generated
+        # into and run from the bundle's migrations/ directory, so the schema
+        # travels with the bundle's git repo rather than the host app.
+        # `doctrine:migrations:generate` / `diff` will write here automatically
+        # because this is the only configured path.
+        'Pixiekat\LuminaUiBundle\Migrations': '%kernel.project_dir%/vendor/pixiekat/lumina-ui-symfony-bundle/migrations'
     enable_profiler: false
