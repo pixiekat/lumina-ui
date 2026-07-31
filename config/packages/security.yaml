@@ -5,7 +5,11 @@ security:
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        app_user_provider:
+          entity:
+            class: Pixiekat\LuminaUiBundle\Entity\User
+            property: email
+        #users_in_memory: { memory: null }
 
     firewalls:
         dev:
@@ -14,7 +18,25 @@ security:
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_user_provider
+
+            two_factor:
+              auth_form_path: 2fa_login
+              check_path: 2fa_login_check
+
+            form_login:
+              login_path: pixiekat_symfony_helpers_login
+              check_path: pixiekat_symfony_helpers_login
+              enable_csrf: true
+              csrf_token_id: submit
+              username_parameter: "user_login[_username]"
+              password_parameter: "user_login[_password]"
+              csrf_parameter: "user_login[_token]"
+
+            logout:
+              path: pixiekat_symfony_helpers_logout
+
+            entry_point: 'form_login'
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -22,10 +44,19 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
+    role_hierarchy:
+      ROLE_SYSADMIN: [ROLE_ADMIN, ROLE_USER, CAN_SWITCH_USER]
+      ROLE_ADMIN: [ROLE_EVALUATOR,ROLE_USER]
+      ROLE_EVALUATOR: [ROLE_USER]
+
     # Note: Only the *first* matching rule is applied
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+      - { path: ^/logout, role: PUBLIC_ACCESS }
+      - { path: ^/register, role: PUBLIC_ACCESS }
+      - { path: ^/reset-password, role: PUBLIC_ACCESS }
+      - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+      #- { path: ^/admin, roles: ROLE_ADMIN }
+      - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
     security:

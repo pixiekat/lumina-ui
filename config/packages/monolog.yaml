@@ -1,6 +1,14 @@
 monolog:
     channels:
+        - app # Custom channel for application logs
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+    handlers:
+      app:
+        type: rotating_file
+        path: "%kernel.logs_dir%/app.%kernel.environment%.log"
+        max_files: 7
+        channels: ["app"]
+        level: debug
 
 when@dev:
     monolog:

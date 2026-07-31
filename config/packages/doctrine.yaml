@@ -1,77 +1,150 @@
 doctrine:
     dbal:
-        url: '%env(resolve:DATABASE_URL)%'
+        # ─────────────────────────────────────────────────────────────────────
+        # TWO connections, ONE entity manager.
+        #
+        # Until now this file used the single-connection shorthand (`dbal.url:`
+        # at the top level). The moment a second database enters the picture we
+        # have to spell the connections out — doctrine-bundle does NOT allow
+        # mixing the shorthand with a `connections:` map, so everything that used
+        # to sit directly under `dbal:` now lives under `connections.default:`.
+        #
+        #   default  → lumina_db  (our own schema; Doctrine owns it, migrations run here)
+        #   patients → ctomop_db  (Django owns it; we are a READ-ONLY GUEST)
+        #   trials   → exactdb    (EXACT owns it; likewise READ-ONLY)
+        #
+        # The `patients` connection deliberately has NO entity manager. Doctrine
+        # therefore has no metadata for it, which means:
+        #   - `doctrine:migrations:diff` can never emit DDL against ctomop,
+        #   - `doctrine:schema:update` can never touch it,
+        #   - nothing can accidentally persist/flush into it.
+        # Read access is via raw DBAL SQL from PatientManager in the Lumina UI
+        # bundle. That is a feature, not a shortcut: the schema belongs to another
+        # team's migrations and would break our ORM mapping without warning.
+        # ─────────────────────────────────────────────────────────────────────
+        default_connection: default
+        connections:
+            default:
+                url: '%env(resolve:DATABASE_URL)%'
 
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '16'
+                # IMPORTANT: You MUST configure your server version,
+                # either here or in the DATABASE_URL env var (see .env file)
+                #server_version: '16'
 
-        profiling_collect_backtrace: '%kernel.debug%'
+                profiling_collect_backtrace: '%kernel.debug%'
 
-        # lumina_db is PostGIS: it ships a system table (spatial_ref_sys) and two
-        # views (geometry_columns, geography_columns) that Doctrine must NOT try to
-        # manage — otherwise `doctrine:migrations:diff` would emit a DROP for them.
-        # This filter makes Doctrine ignore any table named exactly spatial_ref_sys
-        # when comparing the mapped metadata against the live schema. (Views are
-        # ignored by the schema tool already.)
-        schema_filter: '~^(?!spatial_ref_sys$)~'
+                # lumina_db is PostGIS: it ships a system table (spatial_ref_sys) and two
+                # views (geometry_columns, geography_columns) that Doctrine must NOT try to
+                # manage — otherwise `doctrine:migrations:diff` would emit a DROP for them.
+                # This filter makes Doctrine ignore any table named exactly spatial_ref_sys
+                # when comparing the mapped metadata against the live schema. (Views are
+                # ignored by the schema tool already.)
+                schema_filter: '~^(?!spatial_ref_sys$)~'
+
+            # ── ctomop: the patient database ─────────────────────────────────
+            # Container `ctomop_db` from ../lumina/docker-compose.yml, published on
+            # host loopback 127.0.0.1:5432. Credentials come from ../lumina/.env
+            # (CTOMOP_POSTGRES_*); the real DSN belongs in .env.local, never here.
+            patients:
+                url: '%env(resolve:PATIENT_DATABASE_URL)%'
+                profiling_collect_backtrace: '%kernel.debug%'
+
+                # Belt-and-braces. Even though this connection has no entity
+                # manager, a regex that matches nothing guarantees the schema
+                # tooling sees zero tables here if it is ever pointed this way.
+                schema_filter: '~^$~'
+
+            # ── EXACT: the clinical trials database ──────────────────────────
+            # Container `exact_db` (postgis/postgis:16-3.4) from
+            # ../lumina/docker-compose.yml, published on host loopback
+            # 127.0.0.1:5433 — offset from ctomop's 5432 to avoid a collision.
+            #
+            # That container hosts TWO databases with the SAME trials_trial
+            # schema, so the DSN decides which trials you see:
+            #   exactdb      — EXACT's own Django database
+            #   ne_bc_trials — the curated breast-cancer trial set
+            # Pointed at exactdb per the current TRIALS_DATABASE_URL. Switching
+            # is a one-line change in .env.local, nothing in code.
+            #
+            # Same read-only posture as `patients`: no entity manager, so
+            # Doctrine has no metadata and no path to write here.
+            trials:
+                url: '%env(resolve:TRIALS_DATABASE_URL)%'
+                profiling_collect_backtrace: '%kernel.debug%'
+                schema_filter: '~^$~'
+
     orm:
-        validate_xml_mapping: true
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        identity_generation_preferences:
-            Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
-        # auto_mapping OFF: with it on, Doctrine maps the entities of EVERY
-        # registered bundle — including pixiekat/symfony-common-helpers, whose
-        # ResetPasswordRequest references App\Entity\User, so with auto_mapping ON
-        # Doctrine would scan EVERY bundle's entities and fail unpredictably. We
-        # turn it off and map exactly three namespaces explicitly: the app's own
-        # entities (incl. the new App\Entity\User), the Lumina UI bundle, and the
-        # helper bundle's entities (Ban/AuditLog/Term/Vocabulary/ResetPasswordRequest)
-        # — which the helper bundle's request-time services require to be mapped.
-        auto_mapping: false
-        mappings:
-            App:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
-            # Evaluation entities live in the Lumina UI bundle, not in the host
-            # app's src/. We map its Entity directory explicitly (is_bundle: false
-            # + absolute dir) so mapping does not depend on bundle resource
-            # resolution — robust while the bundle is developed in-place.
-            LuminaUi:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/vendor/pixiekat/lumina-ui-symfony-bundle/src/Entity'
-                prefix: 'Pixiekat\LuminaUiBundle\Entity'
-                alias: LuminaUi
-            # Entities shipped by pixiekat/symfony-common-helpers. Required because
-            # the helper bundle's services (BanSubscriber, AuditLogManager, …) look
-            # these up at runtime. BaseEntity in that dir has no #[ORM\Entity] and is
-            # harmlessly skipped by the attribute driver.
-            SymfonyHelpers:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/vendor/pixiekat/symfony-common-helpers/src/Entity'
-                prefix: 'Pixiekat\SymfonyHelpers\Entity'
-                alias: SymfonyHelpers
+        # With named connections we must also name the entity manager explicitly
+        # and tell it which connection to use. Only `default` gets one — see the
+        # long comment above for why `patients` deliberately does not.
+        default_entity_manager: default
+        entity_managers:
+            default:
+                connection: default
+                validate_xml_mapping: true
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+                identity_generation_preferences:
+                    Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
+                # auto_mapping OFF: with it on, Doctrine maps the entities of EVERY
+                # registered bundle — including pixiekat/symfony-common-helpers, whose
+                # ResetPasswordRequest references App\Entity\User, so with auto_mapping ON
+                # Doctrine would scan EVERY bundle's entities and fail unpredictably. We
+                # turn it off and map exactly three namespaces explicitly: the app's own
+                # entities (incl. the new App\Entity\User), the Lumina UI bundle, and the
+                # helper bundle's entities (Ban/AuditLog/Term/Vocabulary/ResetPasswordRequest)
+                # — which the helper bundle's request-time services require to be mapped.
+                auto_mapping: false
+                mappings:
+                    App:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        alias: App
+                    # Evaluation entities live in the Lumina UI bundle, not in the host
+                    # app's src/. We map its Entity directory explicitly (is_bundle: false
+                    # + absolute dir) so mapping does not depend on bundle resource
+                    # resolution — robust while the bundle is developed in-place.
+                    LuminaUi:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/vendor/pixiekat/lumina-ui-symfony-bundle/src/Entity'
+                        prefix: 'Pixiekat\LuminaUiBundle\Entity'
+                        alias: LuminaUi
+                    # Entities shipped by pixiekat/symfony-common-helpers. Required because
+                    # the helper bundle's services (BanSubscriber, AuditLogManager, …) look
+                    # these up at runtime. BaseEntity in that dir has no #[ORM\Entity] and is
+                    # harmlessly skipped by the attribute driver.
+                    SymfonyHelpers:
+                        type: attribute
+                        is_bundle: false
+                        dir: '%kernel.project_dir%/vendor/pixiekat/symfony-common-helpers/src/Entity'
+                        prefix: 'Pixiekat\SymfonyHelpers\Entity'
+                        alias: SymfonyHelpers
 
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            connections:
+                default:
+                    # "TEST_TOKEN" is typically set by ParaTest
+                    dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+                # NOTE: no suffix for `patients`. ctomop is a read-only fixture
+                # database — there is no per-worker test copy of it, and creating
+                # one would mean re-seeding 107 synthetic patients per test run.
+                # Tests that need patient data should stub PatientManagerInterface.
 
 when@prod:
     doctrine:
         orm:
-            query_cache_driver:
-                type: pool
-                pool: doctrine.system_cache_pool
-            result_cache_driver:
-                type: pool
-                pool: doctrine.result_cache_pool
+            entity_managers:
+                default:
+                    query_cache_driver:
+                        type: pool
+                        pool: doctrine.system_cache_pool
+                    result_cache_driver:
+                        type: pool
+                        pool: doctrine.result_cache_pool
 
     framework:
         cache:

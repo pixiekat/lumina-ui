@@ -4,6 +4,8 @@ twig:
         # Templates ship inside the (in-tree) Lumina UI bundle. Registered under
         # the @LuminaUi namespace, e.g. {% extends '@LuminaUi/layout.html.twig' %}.
         '%kernel.project_dir%/vendor/pixiekat/lumina-ui-symfony-bundle/templates': LuminaUi
+        '%kernel.project_dir%/vendor/pixiekat/symfony-common-helpers/templates': PixiekatSymfonyHelpers
+        '%kernel.project_dir%/templates': ~
     globals:
         # Base URLs of the other apps in the stack (instance-specific, defined in
         # the app — not the bundle). Exposed to every template so cross-app links

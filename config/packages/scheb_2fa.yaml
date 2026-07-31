@@ -1,0 +1,29 @@
+# See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/6.x/configuration.html
+scheb_two_factor:
+    email:
+      enabled: true
+      mailer: app.2fa_auth_code_mailer
+      sender_email: admin@dcinetwork.org
+      digits: 8
+
+      # 2fa_form.html.twig lives inside the Lumina UI bundle, registered under the @LuminaUi namespace. The template is used for both the 2fa login form and the trusted device form.
+      template: '@PixiekatSymfonyHelpers/user/2fa_form.html.twig'
+
+    # Trusted device feature
+    trusted_device:
+      enabled: true
+      key: '%env(TRUSTED_DEVICE_SECRET)%'
+      lifetime: 1209600
+      extend_lifetime: true
+      cookie_name: trusted_device
+      cookie_secure: true
+      cookie_same_site: "lax"
+
+    security_tokens:
+      - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+      - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+
+when@dev:
+  scheb_two_factor:
+    email:
+      enabled: true
