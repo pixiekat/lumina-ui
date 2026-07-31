@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5cc0313eb2eccc1d555fa0e4f8832ab",
+    "content-hash": "ee6f351b90a4048bd2e8023d6a4fc5d2",
     "packages": [
         {
             "name": "composer/semver",
@@ -1729,17 +1729,67 @@
             "time": "2026-01-25T14:56:51+00:00"
         },
         {
+            "name": "pixiekat/lumina-ui-symfony-bundle",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pixiekat/lumina-ui-symfony-bundle.git",
+                "reference": "04ac0469f265eb6842f036f60ee4c1e17813e82b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pixiekat/lumina-ui-symfony-bundle/zipball/04ac0469f265eb6842f036f60ee4c1e17813e82b",
+                "reference": "04ac0469f265eb6842f036f60ee4c1e17813e82b",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^4.4",
+                "doctrine/doctrine-bundle": "^3.2",
+                "doctrine/doctrine-migrations-bundle": "^4.0",
+                "doctrine/orm": "^3.6",
+                "php": ">=8.4",
+                "symfony/framework-bundle": "^8.1"
+            },
+            "default-branch": true,
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pixiekat\\LuminaUiBundle\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Lumina UI — Symfony bundle that owns the evaluation entities, Doctrine migrations and controllers for trial-matching runs (EXACT / MatchMiner).",
+            "keywords": [
+                "clinical-trials",
+                "evaluation",
+                "lumina",
+                "symfony-bundle"
+            ],
+            "support": {
+                "source": "https://github.com/pixiekat/lumina-ui-symfony-bundle/tree/main",
+                "issues": "https://github.com/pixiekat/lumina-ui-symfony-bundle/issues"
+            },
+            "time": "2026-07-31T13:02:00+00:00"
+        },
+        {
             "name": "pixiekat/symfony-common-helpers",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://codeberg.org/pixiekat/symfony-common-helpers.git",
-                "reference": "6159af1c5bb429b4d181a8eb92ecdcb81df46ccd"
+                "url": "git@github.com:pixiekat/symfony-common-helpers.git",
+                "reference": "8661d22c01e4cbccc83a867730346e8c8643ca30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://codeberg.org/api/v1/repos/pixiekat/symfony-common-helpers/archive/6159af1c5bb429b4d181a8eb92ecdcb81df46ccd.zip",
-                "reference": "6159af1c5bb429b4d181a8eb92ecdcb81df46ccd",
+                "url": "https://api.github.com/repos/pixiekat/symfony-common-helpers/zipball/8661d22c01e4cbccc83a867730346e8c8643ca30",
+                "reference": "8661d22c01e4cbccc83a867730346e8c8643ca30",
                 "shasum": ""
             },
             "require": {
@@ -1758,7 +1808,11 @@
                     "Pixiekat\\SymfonyHelpers\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Pixiekat\\SymfonyHelpers\\Tests\\": "tests/"
+                }
+            },
             "license": [
                 "proprietary"
             ],
@@ -1770,10 +1824,10 @@
             ],
             "description": "A collection of traits and other common files for Symfony applications.",
             "support": {
-                "issues": "https://codeberg.org/pixiekat/symfony-common-helpers/issues",
-                "source": "https://codeberg.org/pixiekat/symfony-common-helpers/branch/main"
+                "source": "https://github.com/pixiekat/symfony-common-helpers/tree/main",
+                "issues": "https://github.com/pixiekat/symfony-common-helpers/issues"
             },
-            "time": "2026-06-10T07:09:05+00:00"
+            "time": "2026-07-29T22:05:38+00:00"
         },
         {
             "name": "psr/cache",
@@ -10795,6 +10849,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "pixiekat/lumina-ui-symfony-bundle": 20,
         "pixiekat/symfony-common-helpers": 20
     },
     "prefer-stable": true,

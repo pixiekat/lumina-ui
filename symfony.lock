@@ -50,6 +50,9 @@
             "bin/phpunit"
         ]
     },
+    "pixiekat/lumina-ui-symfony-bundle": {
+        "version": "dev-main"
+    },
     "pixiekat/symfony-common-helpers": {
         "version": "dev-main"
     },
