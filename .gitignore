@@ -18,3 +18,9 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###< Keys ###
+.Halite.key
+.Defuse.key
+.Halite.*.key
+.Defuse.*.key

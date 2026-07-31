@@ -1,0 +1,6 @@
+nowo_doctrine_encrypt:
+  default_profile: patient_data  # used when attribute has no profile or uses "default"
+  profiles:
+    patient_data:
+      encryptor_class: Halite
+      secret_directory_path: '%kernel.project_dir%'

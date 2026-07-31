@@ -18,4 +18,5 @@ return [
     Pixiekat\SymfonyHelpers\PixiekatSymfonyHelpersBundle::class => ['all' => true],
     Pixiekat\LuminaUiBundle\LuminaUiBundle::class => ['all' => true],
     Scheb\TwoFactorBundle\SchebTwoFactorBundle::class => ['all' => true],
+    Nowo\DoctrineEncryptBundle\NowoDoctrineEncryptBundle::class => ['all' => true],
 ];
