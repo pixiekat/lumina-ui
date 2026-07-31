@@ -1,0 +1,142 @@
+# Lumina UI — Messenger worker (systemd unit)
+# ============================================
+#
+# Copy to /etc/systemd/system/lumina-worker@.service, edit the paths and User,
+# then:
+#
+#     sudo systemctl daemon-reload
+#     sudo systemctl enable --now lumina-worker@1
+#     journalctl -u 'lumina-worker@*' -f          # follow the logs
+#
+# The trailing @ makes this a TEMPLATE unit: `lumina-worker@1`, `lumina-worker@2`
+# and so on are independent workers from one file. Start with ONE. Each concurrent
+# worker means another simultaneous `docker exec` into exact_app, and EXACT's
+# matching runs are not cheap — scale up only once you have watched the load.
+#
+# ── Why this exists at all ──────────────────────────────────────────────────
+# The Messenger worker has nothing to do with Apache. Apache answers HTTP
+# requests and exits; the worker is a separate long-running CLI process that
+# polls the transport and runs jobs. Nothing in the web server starts, stops or
+# supervises it. That is why the Symfony docs' `symfony serve` advice does not
+# apply to you — `symfony serve` merely happens to babysit workers for you in
+# development. In production, that job belongs to systemd.
+#
+# ── The docker-group problem, which is the real decision here ───────────────
+# ExactCommandRunner runs `docker exec exact_app …`, so the worker's user needs
+# access to the Docker socket. On this host the `docker` group contains only
+# `katy`; Apache runs as `www-data`.
+#
+# Membership of the `docker` group is equivalent to root on the host — anyone in
+# it can start a container that mounts / and read or write anything. So:
+#
+#   DO NOT add www-data to the docker group. It would mean a single
+#   remote-code-execution bug in the web application escalates straight to host
+#   root. Convenience is not worth that trade.
+#
+# Instead run the worker as a user that already has Docker access and is NOT the
+# web server user (below: a dedicated `lumina` account; `katy` also works on a
+# single-operator box). The web app never needs Docker; only the worker does.
+#
+# The properly decoupled fix, when you have the appetite for it, is to stop
+# shelling into a container from the host at all — call EXACT over HTTP (it
+# already serves a swagger endpoint) or run the worker as another compose
+# service. Then no host user needs Docker privileges and this whole section
+# disappears. Worth doing before this ever handles real patient data.
+
+[Unit]
+Description=Lumina UI Messenger worker %i
+Documentation=https://symfony.com/doc/current/messenger.html#deploying-to-production
+
+# Order only — deliberately NOT Requires=. A worker that starts before Postgres
+# is ready should retry (Restart=always below), not fail the whole boot.
+After=network-online.target docker.service postgresql.service
+Wants=network-online.target
+
+# Rate-limit restarts. If the worker dies instantly and repeatedly, something is
+# genuinely broken (bad DSN, unreadable cache) and it should stop and be visible
+# in `systemctl status` rather than spin forever.
+#
+# These two live in [Unit], NOT [Service] — they moved in systemd 229, and put in
+# the wrong section they are silently ignored with only a log line to tell you.
+# `systemd-analyze verify <file>` catches it.
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+
+# The user needs: Docker socket access (for `docker exec`), plus read/write on
+# var/. It must NOT be the web server user — see the note above.
+User=lumina
+# Sharing a group with www-data lets Apache and the worker both use var/cache
+# and var/log without resorting to 0777. Pair with `chmod -R g+w var` and
+# `chgrp -R www-data var`.
+Group=www-data
+UMask=0002
+
+WorkingDirectory=/srv/lumina-ui
+Environment=APP_ENV=prod
+Environment=APP_DEBUG=0
+
+# `--time-limit` and `--memory-limit` are the standard pairing for a PHP daemon.
+# Long-lived PHP processes accumulate memory; rather than chase that, let the
+# worker retire itself on a schedule and have systemd start a fresh one. Both
+# limits are checked BETWEEN messages, so neither can interrupt a run mid-flight.
+#
+#   --time-limit=3600   retire after an hour
+#   --memory-limit=128M retire if RSS passes 128 MB
+#   -v                  info-level logging to journald (-vv for debug)
+ExecStart=/usr/bin/php bin/console messenger:consume async --time-limit=3600 --memory-limit=128M -v
+
+# The worker exiting on its time limit is SUCCESS, not failure — so restart
+# unconditionally rather than on-failure, or it would stop after the first hour.
+Restart=always
+RestartSec=5
+
+# On stop, Messenger finishes the message it is holding and then exits. That can
+# take as long as one EXACT run, and ExactCommandRunner's own timeout is 600s —
+# so allow more than that, or systemd will SIGKILL mid-run and leave an
+# evaluation stuck in "running" forever.
+KillSignal=SIGTERM
+TimeoutStopSec=660
+
+# Modest hardening. The worker needs the Docker socket and the project
+# directory; it has no business anywhere else.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+# NOTE: if you deploy under /home rather than /srv, DROP this line — it makes
+# every home directory read-only for the worker, so writes to var/ would fail
+# with a bewildering permission error that ls says should be fine.
+ProtectHome=read-only
+ReadWritePaths=/srv/lumina-ui/var
+
+[Install]
+WantedBy=multi-user.target
+
+# ── Deploying new code ──────────────────────────────────────────────────────
+# THE STEP EVERYONE FORGETS. A running worker has your old code loaded in memory
+# and will happily keep executing it for as long as it lives. After deploying:
+#
+#     bin/console cache:clear
+#     bin/console messenger:stop-workers
+#
+# `stop-workers` sets a flag in the cache pool; each worker notices it after its
+# current message, exits cleanly, and systemd starts a replacement running the
+# new code. Note this means the deploying user and the worker user must share
+# the same cache directory — another reason for the common group above.
+#
+# `systemctl restart 'lumina-worker@*'` also works but is blunter: it signals
+# mid-message and relies on TimeoutStopSec to let the run finish.
+#
+# ── Watching it ─────────────────────────────────────────────────────────────
+#     systemctl status 'lumina-worker@*'
+#     journalctl -u 'lumina-worker@1' -f
+#     bin/console messenger:stats            # queue depth
+#     bin/console messenger:failed:show      # anything that exhausted its retries
+#     bin/console messenger:failed:retry     # requeue those
+#
+# Messages that fail 3 times (see config/packages/messenger.yaml) land in the
+# `failed` transport and stay there silently until someone looks. Put
+# `messenger:failed:show` somewhere you will actually see it — a weekly timer, a
+# dashboard, anything — or failures will accumulate unnoticed.
