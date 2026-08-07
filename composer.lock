@@ -2232,12 +2232,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pixiekat/lumina-ui-symfony-bundle.git",
-                "reference": "e7f2094ddd9ecd20b756daa9d2d10c274115c11b"
+                "reference": "da2e2466bdf49cbf55ec06058bd0e4076d15491b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pixiekat/lumina-ui-symfony-bundle/zipball/e7f2094ddd9ecd20b756daa9d2d10c274115c11b",
-                "reference": "e7f2094ddd9ecd20b756daa9d2d10c274115c11b",
+                "url": "https://api.github.com/repos/pixiekat/lumina-ui-symfony-bundle/zipball/da2e2466bdf49cbf55ec06058bd0e4076d15491b",
+                "reference": "da2e2466bdf49cbf55ec06058bd0e4076d15491b",
                 "shasum": ""
             },
             "require": {
@@ -2276,7 +2276,7 @@
                 "source": "https://github.com/pixiekat/lumina-ui-symfony-bundle/tree/main",
                 "issues": "https://github.com/pixiekat/lumina-ui-symfony-bundle/issues"
             },
-            "time": "2026-07-31T13:48:04+00:00"
+            "time": "2026-08-07T13:02:25+00:00"
         },
         {
             "name": "pixiekat/symfony-common-helpers",
