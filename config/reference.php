@@ -1505,6 +1505,18 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     throttle_limit?: int|Param, // Another password reset cannot be made faster than this throttle time in seconds. // Default: 3600
  *     enable_garbage_collection?: bool|Param, // Enable/Disable automatic garbage collection. // Default: true
  * }
+ * @psalm-type SymfonyHelpersConfig = array{
+ *     user_class?: scalar|Param|null, // The application's user entity. Bundle entities map their user relations against HelpersUserInterface, and this is the concrete class Doctrine resolves that interface to. // Default: "App\\Entity\\User"
+ *     resolve_target_entities?: bool|Param, // Whether the bundle should write the doctrine.orm.resolve_target_entities mapping for you. Turn this off only if you want to declare it by hand. // Default: true
+ *     features?: array{ // Switches for the features this bundle ships. A disabled feature is hidden from the admin menu and its voter denies access.
+ *         audit?: bool|Param, // The audit log and its viewer. // Default: true
+ *         bans?: bool|Param, // IP bans. // Default: true
+ *         blocks?: bool|Param, // Blocks and block items. // Default: true
+ *         shoutbox?: bool|Param, // The shoutbox. // Default: true
+ *         taxonomy?: bool|Param, // Vocabularies and terms. // Default: true
+ *     },
+ *     admin_layout?: scalar|Param|null, // The template every admin screen in this bundle extends. Point it at your own branding layer — the one that sets admin_nav_sections and admin_brand. // Default: "@PixiekatSymfonyHelpers/admin/cp_layout.html.twig"
+ * }
  * @psalm-type SchebTwoFactorConfig = array{
  *     persister?: scalar|Param|null, // Default: "scheb_two_factor.persister.doctrine"
  *     model_manager_name?: scalar|Param|null, // Default: null
@@ -1550,6 +1562,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         secret_key_env_var?: scalar|Param|null, // Key content from env: use %env(APP_ENCRYPT_KEY)% so Symfony resolves it at config load and the bundle receives the value. When set, secret_directory_path and secret_key_filename are not allowed. // Default: null
  *     }>,
  * }
+ * @psalm-type MeteoConceptHCaptchaConfig = array{
+ *     hcaptcha?: array{ // The configuration value of your hCaptcha account (visit https://dashboard.hcaptcha.com to find them).
+ *         site_key?: scalar|Param|null, // The site key for this website. // Default: null
+ *         secret?: scalar|Param|null, // The secret used to authenticate requests to hCaptcha verification endpoint.
+ *     },
+ *     validation?: scalar|Param|null, // If 'lax', the CAPTCHA will be considered valid if the hCaptcha endpoint times out or return an unexpected answer. If 'strict' (the default), the hCaptcha MUST return a "success: true" answer for the CAPTCHA to validate. // Default: "strict"
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1565,8 +1584,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     monolog?: MonologConfig,
  *     symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *     symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *     symfony_helpers?: SymfonyHelpersConfig,
  *     scheb_two_factor?: SchebTwoFactorConfig,
  *     nowo_doctrine_encrypt?: NowoDoctrineEncryptConfig,
+ *     meteo_concept_h_captcha?: MeteoConceptHCaptchaConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1585,8 +1606,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         maker?: MakerConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *         symfony_helpers?: SymfonyHelpersConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         nowo_doctrine_encrypt?: NowoDoctrineEncryptConfig,
+ *         meteo_concept_h_captcha?: MeteoConceptHCaptchaConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1603,8 +1626,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *         symfony_helpers?: SymfonyHelpersConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         nowo_doctrine_encrypt?: NowoDoctrineEncryptConfig,
+ *         meteo_concept_h_captcha?: MeteoConceptHCaptchaConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1622,8 +1647,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         monolog?: MonologConfig,
  *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
  *         symfonycasts_reset_password?: SymfonycastsResetPasswordConfig,
+ *         symfony_helpers?: SymfonyHelpersConfig,
  *         scheb_two_factor?: SchebTwoFactorConfig,
  *         nowo_doctrine_encrypt?: NowoDoctrineEncryptConfig,
+ *         meteo_concept_h_captcha?: MeteoConceptHCaptchaConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

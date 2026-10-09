@@ -1,0 +1,43 @@
+symfony_helpers:
+    # The application's user entity.
+    #
+    # The helpers bundle maps its own user relations (ResetPasswordRequest, and
+    # anything added later) against Pixiekat\SymfonyHelpers\Interfaces\Entity\
+    # HelpersUserInterface rather than naming App\Entity\User directly — a
+    # bundle cannot reference a class that only exists inside the app.
+    #
+    # The bundle reads this value and prepends the matching
+    # doctrine.orm.resolve_target_entities config for you, so Doctrine swaps the
+    # interface for this class when it builds its mapping metadata. The database
+    # schema is identical either way; this is purely a source-level indirection.
+    #
+    # 'App\Entity\User' is also the default, so this file is really documentation
+    # of the knob rather than a change in behaviour — but it is the one place to
+    # look when you eventually rename or move the user entity.
+    user_class: 'Pixiekat\LuminaUiBundle\Entity\User'
+
+    # Set to false to write the resolve_target_entities mapping by hand in
+    # doctrine.yaml instead of letting the bundle contribute it.
+    resolve_target_entities: true
+
+    # The template every admin screen in the bundle extends, published as the
+    # `admin_layout` Twig global. Point it at this site's branding layer — the
+    # one that sets the header text and merges its menu onto the bundle's.
+    #
+    # This is configuration rather than a templates/bundles/… override because
+    # that override path is app-only, and Lumina (a bundle) has to be able to do
+    # exactly the same thing. One mechanism, both kinds of consumer.
+    admin_layout: '@LuminaUi/admin/layout.html.twig'
+
+    # Which parts of the bundle this site uses. Switching one off removes it
+    # from the control panel menu AND makes its voter abstain, so its routes
+    # answer 403 rather than staying reachable to anyone who guesses the URL.
+    #
+    # Tables and migrations are unaffected — turning a feature off for a while
+    # should not throw away its data.
+    features:
+        audit: true
+        bans: true
+        blocks: false
+        shoutbox: false
+        taxonomy: false

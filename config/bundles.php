@@ -19,4 +19,5 @@ return [
     Pixiekat\LuminaUiBundle\LuminaUiBundle::class => ['all' => true],
     Scheb\TwoFactorBundle\SchebTwoFactorBundle::class => ['all' => true],
     Nowo\DoctrineEncryptBundle\NowoDoctrineEncryptBundle::class => ['all' => true],
+    MeteoConcept\HCaptchaBundle\MeteoConceptHCaptchaBundle::class => ['all' => true],
 ];

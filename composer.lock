@@ -1470,6 +1470,70 @@
             "time": "2025-10-17T11:30:53+00:00"
         },
         {
+            "name": "meteo-concept/hcaptcha-bundle",
+            "version": "v4.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Meteo-Concept/hcaptcha-bundle.git",
+                "reference": "d1276a51308454d4a78a5c00ebd2291195d45506"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Meteo-Concept/hcaptcha-bundle/zipball/d1276a51308454d4a78a5c00ebd2291195d45506",
+                "reference": "d1276a51308454d4a78a5c00ebd2291195d45506",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "psr/http-client": "^1.0",
+                "psr/http-client-implementation": "^1.0",
+                "psr/http-factory-implementation": "^1.0",
+                "psr/http-message": "^1.0|^2.0",
+                "symfony/config": "~6.4|~7.0|~8.0",
+                "symfony/form": "~6.4|~7.0|~8.0",
+                "symfony/twig-bridge": "~6.4|~7.0|~8.0",
+                "symfony/validator": "~6.4|~7.0|~8.0"
+            },
+            "require-dev": {
+                "matthiasnoback/symfony-dependency-injection-test": "^5.0|^6.0",
+                "nyholm/psr7": "^1.3",
+                "nyholm/symfony-bundle-test": "^3.0",
+                "php-http/mock-client": "^1.5",
+                "phpunit/phpunit": "^10.5|^11.5|^12.0",
+                "symfony/browser-kit": "^6.4|^7.0|^8.0",
+                "symfony/css-selector": "^6.4|^7.0|^8.0",
+                "symfony/framework-bundle": "^6.4|^7.0|^8.0",
+                "symfony/panther": "^2.0",
+                "symfony/phpunit-bridge": "^6.4|^7.0|^8.0",
+                "symfony/twig-bundle": "^6.4|^7.0|^8.0"
+            },
+            "suggest": {
+                "symfony/http-client": "A Symfony component that implements PSR-18 HTTP client interface"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "MeteoConcept\\HCaptchaBundle\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Laurent Georget",
+                    "email": "laurent.georget@meteo-concept.fr"
+                }
+            ],
+            "description": "A Symfony bundle to use hCaptcha in forms",
+            "support": {
+                "issues": "https://github.com/Meteo-Concept/hcaptcha-bundle/issues",
+                "source": "https://github.com/Meteo-Concept/hcaptcha-bundle/tree/v4.5.0"
+            },
+            "time": "2026-02-03T07:56:45+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "3.10.0",
             "source": {
@@ -1663,6 +1727,84 @@
                 }
             ],
             "time": "2026-07-29T10:23:53+00:00"
+        },
+        {
+            "name": "nyholm/psr7",
+            "version": "1.8.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nyholm/psr7.git",
+                "reference": "a71f2b11690f4b24d099d6b16690a90ae14fc6f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/a71f2b11690f4b24d099d6b16690a90ae14fc6f3",
+                "reference": "a71f2b11690f4b24d099d6b16690a90ae14fc6f3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 || ^2.0"
+            },
+            "provide": {
+                "php-http/message-factory-implementation": "1.0",
+                "psr/http-factory-implementation": "1.0",
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "http-interop/http-factory-tests": "^0.9",
+                "php-http/message-factory": "^1.0",
+                "php-http/psr7-integration-tests": "^1.0",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.4",
+                "symfony/error-handler": "^4.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nyholm\\Psr7\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tobias Nyholm",
+                    "email": "tobias.nyholm@gmail.com"
+                },
+                {
+                    "name": "Martijn van der Ven",
+                    "email": "martijn@vanderven.se"
+                }
+            ],
+            "description": "A fast PHP7 implementation of PSR-7",
+            "homepage": "https://tnyholm.se",
+            "keywords": [
+                "psr-17",
+                "psr-7"
+            ],
+            "support": {
+                "issues": "https://github.com/Nyholm/psr7/issues",
+                "source": "https://github.com/Nyholm/psr7/tree/1.8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Zegnat",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nyholm",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-09-09T07:06:30+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -2232,12 +2374,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pixiekat/lumina-ui-symfony-bundle.git",
-                "reference": "da2e2466bdf49cbf55ec06058bd0e4076d15491b"
+                "reference": "5979f25fde07b5de73c265d60418959e500b0295"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pixiekat/lumina-ui-symfony-bundle/zipball/da2e2466bdf49cbf55ec06058bd0e4076d15491b",
-                "reference": "da2e2466bdf49cbf55ec06058bd0e4076d15491b",
+                "url": "https://api.github.com/repos/pixiekat/lumina-ui-symfony-bundle/zipball/5979f25fde07b5de73c265d60418959e500b0295",
+                "reference": "5979f25fde07b5de73c265d60418959e500b0295",
                 "shasum": ""
             },
             "require": {
@@ -2276,30 +2418,35 @@
                 "source": "https://github.com/pixiekat/lumina-ui-symfony-bundle/tree/main",
                 "issues": "https://github.com/pixiekat/lumina-ui-symfony-bundle/issues"
             },
-            "time": "2026-08-07T13:02:25+00:00"
+            "time": "2026-10-09T19:14:13+00:00"
         },
         {
             "name": "pixiekat/symfony-common-helpers",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:pixiekat/symfony-common-helpers.git",
-                "reference": "8661d22c01e4cbccc83a867730346e8c8643ca30"
+                "url": "https://github.com/pixiekat/symfony-common-helpers.git",
+                "reference": "b8bd480f0b225c474b5889b7c4c36b6d5cf4c9ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pixiekat/symfony-common-helpers/zipball/8661d22c01e4cbccc83a867730346e8c8643ca30",
-                "reference": "8661d22c01e4cbccc83a867730346e8c8643ca30",
+                "url": "https://api.github.com/repos/pixiekat/symfony-common-helpers/zipball/b8bd480f0b225c474b5889b7c4c36b6d5cf4c9ff",
+                "reference": "b8bd480f0b225c474b5889b7c4c36b6d5cf4c9ff",
                 "shasum": ""
             },
             "require": {
+                "meteo-concept/hcaptcha-bundle": "^4.5",
+                "nyholm/psr7": "^1.2",
                 "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+                "symfony/deprecation-contracts": "^3.0",
                 "symfony/framework-bundle": "^6.4 || >=7.0",
+                "symfony/http-client": "^6.4 || >=7.0",
                 "symfonycasts/reset-password-bundle": "^1.22",
                 "symfonycasts/verify-email-bundle": "^1.14"
             },
             "require-dev": {
-                "kint-php/kint": "^6.0"
+                "kint-php/kint": "^6.0",
+                "phpunit/phpunit": "^11.0 || ^12.0 || ^13.0"
             },
             "default-branch": true,
             "type": "symfony-bundle",
@@ -2327,7 +2474,7 @@
                 "source": "https://github.com/pixiekat/symfony-common-helpers/tree/main",
                 "issues": "https://github.com/pixiekat/symfony-common-helpers/issues"
             },
-            "time": "2026-07-29T22:05:38+00:00"
+            "time": "2026-08-13T11:04:43+00:00"
         },
         {
             "name": "psr/cache",
@@ -2528,6 +2675,166 @@
                 "source": "https://github.com/php-fig/event-dispatcher/tree/1.0.0"
             },
             "time": "2019-01-08T18:20:26+00:00"
+        },
+        {
+            "name": "psr/http-client",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-client.git",
+                "reference": "bb5906edc1c324c9a05aa0873d40117941e5fa90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-client/zipball/bb5906edc1c324c9a05aa0873d40117941e5fa90",
+                "reference": "bb5906edc1c324c9a05aa0873d40117941e5fa90",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0 || ^8.0",
+                "psr/http-message": "^1.0 || ^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP clients",
+            "homepage": "https://github.com/php-fig/http-client",
+            "keywords": [
+                "http",
+                "http-client",
+                "psr",
+                "psr-18"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/http-client"
+            },
+            "time": "2023-09-23T14:17:50+00:00"
+        },
+        {
+            "name": "psr/http-factory",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-factory.git",
+                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
+                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1",
+                "psr/http-message": "^1.0 || ^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "PSR-17: Common interfaces for PSR-7 HTTP message factories",
+            "keywords": [
+                "factory",
+                "http",
+                "message",
+                "psr",
+                "psr-17",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/http-factory"
+            },
+            "time": "2024-04-15T12:06:14+00:00"
+        },
+        {
+            "name": "psr/http-message",
+            "version": "2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/2.0"
+            },
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/link",

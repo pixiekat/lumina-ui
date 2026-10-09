@@ -1,5 +1,13 @@
 doctrine_migrations:
     migrations_paths:
+        # The helpers bundle ships its own migrations (bans, audit logs,
+        # taxonomy, blocks) under its own namespace. Registering the path here
+        # means `doctrine:migrations:migrate` runs them alongside the app's own,
+        # and keeps them OUT of `make:migration` diffs — otherwise the app would
+        # try to generate duplicate CREATE TABLE statements for tables the
+        # bundle already knows how to create.
+        'Pixiekat\SymfonyHelpers': '%kernel.project_dir%/vendor/pixiekat/symfony-common-helpers/migrations'
+
         # The lumina_db schema is OWNED BY THE BUNDLE: migrations are generated
         # into and run from the bundle's migrations/ directory, so the schema
         # travels with the bundle's git repo rather than the host app.

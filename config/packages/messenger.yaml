@@ -26,3 +26,42 @@ framework:
             # Process them with:  bin/console messenger:consume async
             Pixiekat\LuminaUiBundle\Message\RunEvaluation: async
             Pixiekat\LuminaUiBundle\Message\RunBatch: async
+
+# ── Development: send mail in-request ────────────────────────────────────────
+#
+# In dev, email is delivered synchronously so it reaches Mailpit before the page
+# finishes rendering. Everything else — RunEvaluation, RunBatch — stays async,
+# because those genuinely are background work and watching them run through the
+# worker is the point of having one.
+#
+# ── The problem this solves ──────────────────────────────────────────────────
+# Two-factor login mail on the async transport depends on a running worker. If
+# `messenger:consume async` is not up, the SendEmailMessage sits in the queue and
+# NOTHING reports it: the request succeeds, the profiler cheerfully shows the
+# email, and the code never arrives. Being unable to log in, with no error
+# anywhere, is a poor way to discover the worker died.
+#
+# There is a subtler version even when the worker IS up. The Mailer data
+# collector records the message at DISPATCH, so the toolbar has the 2FA code
+# instantly while Mailpit only gets it once the worker picks the job up. Checking
+# Mailpit inside that gap shows an empty inbox, which trains you to read codes
+# out of the profiler instead. Sending synchronously closes the gap.
+#
+# ── Why dev only ─────────────────────────────────────────────────────────────
+# Async is right in production: an SMTP handshake to a real provider can take
+# seconds or fail outright, and neither belongs inside a user's login request.
+# The retry_strategy above exists precisely so a transient SMTP failure is
+# retried rather than lost. Keep that in prod; trade it for immediacy in dev,
+# where "SMTP" is a local Mailpit that answers instantly and never fails.
+when@dev:
+    framework:
+        messenger:
+            transports:
+                # `sync://` hands the message straight to its handler in the same
+                # process — no queue, no worker. Defined here rather than
+                # uncommented above so it exists only where it is routed to.
+                sync: 'sync://'
+            routing:
+                # Merged over the routing above: this key is re-pointed, and every
+                # other entry keeps whatever it was given there.
+                Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
